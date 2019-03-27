@@ -2,12 +2,14 @@
   <arg name="model_name" default="ssd300_strawberry_50000.pth"/>
   <arg name="confidence_thres" default="0.8"/>
   <arg name="std_mul" default="0.5"/>
+  <arg name="verbose" default="false"/>
   <node pkg="image_prediction" type="strawberry_box.py" name="ssd_prediciton_node" output="screen">
     <param name="model_name" value="$(arg model_name)"/>
     <param name="confidence_thres" value="$(arg confidence_thres)"/>
   </node>
   <node pkg="pointcloud_perception" type="find_affordance_node" name="find_affordance_node" output="screen">
     <param name="std_mul" value="$(arg std_mul)"/>
-    <remap from="/bounding_box" to="/ssd_prediciton_node/bounding_box"/>
+    <param name="verbose" value="$(arg verbose)"/>
+    <remap from="bounding_box" to="/ssd_prediciton_node/bounding_box"/>
   </node>
 </launch>
