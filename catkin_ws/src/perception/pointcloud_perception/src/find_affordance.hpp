@@ -35,7 +35,7 @@ class PCPerception{
   ros::NodeHandle nh_, pnh_;
   ros::Subscriber sub_bbox;
   ros::Publisher pub_marker, pub_pc, pub_aff;
-  PointXYZ pc_;
+  PointXYZRGB pc_;
   bool verbose; // If true, also publish pc of last target
   double std_mul;
   /* Initial marker with given id number
@@ -113,7 +113,7 @@ void PCPerception::callback(const image_prediction::bboxList msg){
   geometry_msgs::PoseArray poseArray;
   visualization_msgs::MarkerArray markerArray;
   visualization_msgs::Marker marker;
-  PointXYZ temp;
+  PointXYZRGB temp;
   for(int i=0; i<numOfTarget; ++i){ 
     initMarker(marker, i);
     PixelWithRVector pwrv;
@@ -137,11 +137,14 @@ void PCPerception::callback(const image_prediction::bboxList msg){
     } // end num
     // Extract inlier pixels to pc
     for(int num=0; num<inlier.size(); ++num){
-      //temp.push_back(pc_.at(inlier[num].first.first, inlier[num].first.second)); //Not Organized!!
-      int idx = inlier[num].first.second * IMG_WIDTH + inlier[num].first.first;
-      if(idx>=pc_.size()){
-        ROS_WARN("Index out of range, ignore...");
-      } else temp.push_back(pc_.at(idx)); 
+      if(pc_.isOrganized())
+        temp.push_back(pc_.at(inlier[num].first.first, inlier[num].first.second)); //Not Organized!!
+      else{
+        int idx = inlier[num].first.second * IMG_WIDTH + inlier[num].first.first;
+        if(idx>=pc_.size()){
+          ROS_WARN("Index out of range, ignore...");
+        } else temp.push_back(pc_.at(idx)); 
+      }
     } // end num
     if(temp.size()<PCNUM_THRES){
       ROS_WARN("Points too few, ignore...");
