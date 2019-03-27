@@ -73,7 +73,6 @@ PCPerception::PCPerception(ros::NodeHandle nh, ros::NodeHandle pnh): \
   sub_bbox = nh_.subscribe("bounding_box", 1, &PCPerception::callback, this);
   pub_marker = pnh_.advertise<visualization_msgs::MarkerArray>("affordance_marker", 1);
   pub_aff = pnh_.advertise<geometry_msgs::PoseArray>("affordance", 1);
-  pub_pc = pnh_.advertise<sensor_msgs::PointCloud2>("points", 1);
   if(!pnh_.getParam("std_mul", std_mul)){
     std_mul = 0.5;
     ROS_WARN("std_mul use default value: %f", std_mul);
@@ -81,7 +80,7 @@ PCPerception::PCPerception(ros::NodeHandle nh, ros::NodeHandle pnh): \
   if(!pnh_.getParam("verbose", verbose)){
     verbose = false;
     ROS_WARN("std_mul use default value: %s", (verbose==true?"true":"false"));
-  }
+  } if(verbose) pub_pc = pnh_.advertise<sensor_msgs::PointCloud2>("points", 1);
 }
 
 void PCPerception::initMarker(visualization_msgs::Marker& marker, int id){
